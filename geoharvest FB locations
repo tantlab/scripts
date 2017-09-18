@@ -7,7 +7,7 @@ graph = facebook.GraphAPI(access_token='my_access_token', version='2.7')
 
 # iterate over a set of harvest points to get a list of places
 
-with open('/Users/anders/Downloads/DGI projekt - Harvest point.csv') as csvfile:
+with open('myharvestpoints.csv') as csvfile:
     harvestlist = csv.reader(csvfile)
     placelist = []
     
