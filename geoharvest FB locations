@@ -1,0 +1,47 @@
+import csv
+import facebook
+graph = facebook.GraphAPI(access_token='my_access_token', version='2.7')
+
+# iterate over a set of harvest points to get a list of places
+
+with open('/Users/anders/Downloads/DGI projekt - Harvest point.csv') as csvfile:
+    harvestlist = csv.reader(csvfile)
+    placelist = []
+    
+    for row in harvestlist:
+        print(row)
+        token = 'search?type=place&center=' + row[0] 
+        places = graph.get_object(id=token)
+        
+        count = 0
+        for i in places['data']:
+            placelist.append(places['data'][count])
+            count = count + 1
+        print('places indexed for harvest poin')
+        while 'paging' in places:
+            nexttoken = 'search?type=place&center=' + row[0] + '&after=' + places['paging']['cursors']['after']
+            places = graph.get_object(id=nexttoken)
+            count = 0
+            for i in places['data']:
+                placelist.append(places['data'][count])
+                count = count + 1
+                print('more places indexed for harvest point')
+            print('harvest point done')
+        
+    print('harvest complete')
+
+# remove duplicate places
+
+placelist_clean = []
+for i in placelist:
+    if i not in placelist_clean:
+        placelist_clean.append(i)
+        
+print('duplicates removed')
+
+#write data file
+
+import json
+
+with open('path/of/local/output_file.json', 'w') as outfile:
+    json.dump(placelist_clean, outfile, ensure_ascii=False)
