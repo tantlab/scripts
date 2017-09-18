@@ -1,3 +1,5 @@
+```python
+
 import csv
 import facebook
 graph = facebook.GraphAPI(access_token='my_access_token', version='2.7')
@@ -45,3 +47,5 @@ import json
 
 with open('path/of/local/output_file.json', 'w') as outfile:
     json.dump(placelist_clean, outfile, ensure_ascii=False)
+    
+```
