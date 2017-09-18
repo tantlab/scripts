@@ -17,7 +17,7 @@ with open('/Users/anders/Downloads/DGI projekt - Harvest point.csv') as csvfile:
         for i in places['data']:
             placelist.append(places['data'][count])
             count = count + 1
-        print('places indexed for harvest poin')
+        print('places indexed for harvest point')
         while 'paging' in places:
             nexttoken = 'search?type=place&center=' + row[0] + '&after=' + places['paging']['cursors']['after']
             places = graph.get_object(id=nexttoken)
