@@ -1,0 +1,319 @@
+#!/usr/bin/env python
+
+import csv
+import json
+import time
+
+#Merge and clean JSONs 
+
+#Open JSONs: Fill in the path for each of the json files containing the harvested event data. Add or delete files as appropriate.
+
+with open('/path/to/event_data1.json') as jsonfile1:
+    EventData1 = json.load(jsonfile1)
+with open('/path/to/event_data2.json') as jsonfile2:
+    EventData2 = json.load(jsonfile2)
+with open('/path/to/event_data3.json') as jsonfile3:
+    EventData3 = json.load(jsonfile3)
+with open('/path/to/event_data4.json') as jsonfile4:
+    EventData4 = json.load(jsonfile4)
+with open('/path/to/event_data5.json') as jsonfile5:
+    EventData5 = json.load(jsonfile5)
+with open('/path/to/event_data6.json') as jsonfile6:
+    EventData6 = json.load(jsonfile6)
+with open('/path/to/event_data7.json') as jsonfile7:
+    EventData7 = json.load(jsonfile7)
+with open('/path/to/event_data8.json') as jsonfile8:
+    EventData8 = json.load(jsonfile8)
+with open('/path/to/event_data9.json') as jsonfile9:
+    EventData9 = json.load(jsonfile9)
+with open('/path/to/event_data10.json') as jsonfile10:
+    EventData10 = json.load(jsonfile10)
+with open('/path/to/event_data11.json') as jsonfile11:
+    EventData11 = json.load(jsonfile11)
+with open('/path/to/event_data12.json') as jsonfile12:
+    EventData12 = json.load(jsonfile12)
+with open('/path/to/event_data1.json13') as jsonfile13:
+    EventData13 = json.load(jsonfile13)
+with open('/path/to/event_data1.json14') as jsonfile14:
+    EventData14 = json.load(jsonfile14)
+
+ #Adding json data to the EventData list. Ensure a for loop for each of the jsons. 
+    
+EventData = []
+
+EventCount = 0
+for i in EventData1:
+    EventData.append(EventData1[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData2:
+    EventData.append(EventData2[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData3:
+    EventData.append(EventData3[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData4:
+    EventData.append(EventData4[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData5:
+    EventData.append(EventData5[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData6:
+    EventData.append(EventData6[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData7:
+    EventData.append(EventData7[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData8:
+    EventData.append(EventData8[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData9:
+    EventData.append(EventData9[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData10:
+    EventData.append(EventData10[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData11:
+    EventData.append(EventData11[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData12:
+    EventData.append(EventData12[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData13:
+    EventData.append(EventData13[EventCount])
+    EventCount = EventCount + 1
+EventCount = 0
+for i in EventData14:
+    EventData.append(EventData14[EventCount])
+    EventCount = EventCount + 1
+
+len(EventData)
+
+# clean data for duplicate events
+
+EventDataClean = []
+EventCount = 0
+
+for i in EventData:
+    if 'attending' in EventData[EventCount]: 
+        if'interested' in EventData[EventCount]: 
+            if 'maybe' in EventData[EventCount]:
+                EventDataClean.append(EventData[EventCount])
+    EventCount = EventCount + 1
+len(EventDataClean)
+EventData = EventDataClean
+
+
+# build simple co-attendance network
+
+SourceCount = 0
+CoAttendanceNetwork = []
+NodeCount = len(EventData)
+
+for i in EventData:
+    Source = EventData[SourceCount]['name']
+    TargetCount = SourceCount + 1
+    while TargetCount < NodeCount:
+        Target = EventData[TargetCount]['name']
+        Weight = 0
+        EdgeCount = 0
+        for i in EventData[SourceCount]['attending']:
+            if EventData[SourceCount]['attending'][EdgeCount] in EventData[TargetCount]['attending']:
+                Weight = Weight + 1
+        EdgeWeight = {'weight':Weight}
+        Edge = (Source, Target, EdgeWeight)
+        TargetCount = TargetCount + 1        
+        CoAttendanceNetwork.append(Edge)
+    SourceCount = SourceCount + 1
+    print(SourceCount)
+print('done')        
+
+# build simple graph
+import networkx
+Graph = networkx.Graph()
+
+Graph.add_edges_from(CoAttendanceNetwork)
+
+# write graph file
+networkx.write_gexf(Graph, '/path/to/graph_file.gexf')
+print('done')
+
+# OR build graph with metadata
+
+import networkx
+Graph = networkx.Graph()
+
+Graph.add_edges_from(CoAttendanceNetwork)
+
+event_count = 0
+for i in EventData:
+    NodeName = EventData[event_count]['name']
+    # get name of event owner
+    if 'name' in EventData[event_count]['owner']:
+        Owner = EventData[event_count]['owner']['name']
+        Graph.node[NodeName]['owner'] = Owner
+    # get location data
+    if 'place' in EventData[event_count]:
+        if 'name' in EventData[event_count]['place']:
+            PlaceName = EventData[event_count]['place']['name']
+            Graph.node[NodeName]['place name'] = PlaceName
+        if 'location' in EventData[event_count]['place']:
+            if 'street' in EventData[event_count]['place']['location']:
+                Adress = EventData[event_count]['place']['location']['street']
+                Graph.node[NodeName]['adress'] = Adress
+            if 'latitude' in EventData[event_count]['place']['location']:
+                Lat = EventData[event_count]['place']['location']['latitude']
+                Graph.node[NodeName]['lat'] = Lat
+            if 'longigude' in EventData[event_count]['place']['location']:
+                Lon = EventData[event_count]['place']['location']['longitude']
+                Graph.node[NodeName]['lon'] = Lon
+    # get time
+    if 'start_time' in EventData[event_count]:
+        Time = EventData[event_count]['start_time']
+        Graph.node[NodeName]['time'] = Time
+    # get attendance
+    if 'attending_count' in EventData[event_count]:
+        Attending = EventData[event_count]['attending_count']
+        Graph.node[NodeName]['attending'] = Attending
+    if 'interested_count' in EventData[event_count]:
+        Interested = EventData[event_count]['interested_count']
+        Graph.node[NodeName]['interested'] = Interested
+    if 'maybe_count' in EventData[event_count]:
+        Maybe = EventData[event_count]['maybe_count']
+        Graph.node[NodeName]['maybes'] = Maybe
+    event_count = event_count + 1
+    
+# write gexf
+networkx.write_gexf(Graph, '/path/to/graph_file.gexf')
+print('done')
+
+
+# OR build network of co-attendance + co-interested + co-maybe with normalized edge weights
+
+SourceCount = 0
+CoAttendanceNetwork = []
+NodeCount = len(EventData) - 1
+
+for i in EventData:
+    Source = EventData[SourceCount]['name']
+    TargetCount = SourceCount + 1
+    while TargetCount < NodeCount:
+        Target = EventData[TargetCount]['name']
+        Weight = 0
+        #source edges from attending
+        EdgeCount = 0
+        for i in EventData[SourceCount]['attending']:
+            if EventData[SourceCount]['attending'][EdgeCount] in EventData[TargetCount]['attending']:
+                Weight = Weight + 1
+            if EventData[SourceCount]['attending'][EdgeCount] in EventData[TargetCount]['interested']:
+                Weight = Weight + 1
+            if EventData[SourceCount]['attending'][EdgeCount] in EventData[TargetCount]['maybe']:
+                Weight = Weight + 1
+        #source edges from interested
+        EdgeCount = 0
+        for i in EventData[SourceCount]['interested']:
+            if EventData[SourceCount]['interested'][EdgeCount] in EventData[TargetCount]['attending']:
+                Weight = Weight + 1
+            if EventData[SourceCount]['interested'][EdgeCount] in EventData[TargetCount]['interested']:
+                Weight = Weight + 1
+            if EventData[SourceCount]['interested'][EdgeCount] in EventData[TargetCount]['maybe']:
+                Weight = Weight + 1
+        #source edges from maybe
+        EdgeCount = 0
+        for i in EventData[SourceCount]['maybe']:
+            if EventData[SourceCount]['maybe'][EdgeCount] in EventData[TargetCount]['attending']:
+                Weight = Weight + 1
+            if EventData[SourceCount]['maybe'][EdgeCount] in EventData[TargetCount]['interested']:
+                Weight = Weight + 1
+            if EventData[SourceCount]['maybe'][EdgeCount] in EventData[TargetCount]['maybe']:
+                Weight = Weight + 1
+        if Weight > 0:
+        #normalize edge weights
+            PotSourceNodes = len(EventData[SourceCount]['attending']) + len(EventData[SourceCount]['interested']) + len(EventData[SourceCount]['maybe'])
+            PotTargetNodes = len(EventData[TargetCount]['attending']) + len(EventData[TargetCount]['interested']) + len(EventData[TargetCount]['maybe'])
+            if PotSourceNodes < PotTargetNodes:
+                NormWeight = Weight / PotSourceNodes
+            if PotTargetNodes < PotSourceNodes:
+                NormWeight = Weight / PotTargetNodes
+            if PotSourceNodes is PotTargetNodes:
+                NormWeight = Weight / PotSourceNodes
+            #write edge weights and normalised edge weights
+            EdgeWeight = {'weight':Weight, 'normalized weight':NormWeight}
+            Edge = (Source, Target, EdgeWeight)
+            CoAttendanceNetwork.append(Edge) 
+        TargetCount = TargetCount + 1   
+    SourceCount = SourceCount + 1
+    print(SourceCount)
+print('done')      
+
+
+# build simple graph
+import networkx
+Graph = networkx.Graph()
+
+Graph.add_edges_from(CoAttendanceNetwork)
+
+# write graph file
+networkx.write_gexf(Graph, '/path/to/graph_file.gexf')
+print('done')
+
+# OR build graph with metadata
+
+import networkx
+Graph = networkx.Graph()
+
+Graph.add_edges_from(CoAttendanceNetwork)
+
+event_count = 0
+for i in EventData:
+    NodeName = EventData[event_count]['name']
+    # get name of event owner
+    if 'name' in EventData[event_count]['owner']:
+        Owner = EventData[event_count]['owner']['name']
+        Graph.node[NodeName]['owner'] = Owner
+    # get location data
+    if 'place' in EventData[event_count]:
+        if 'name' in EventData[event_count]['place']:
+            PlaceName = EventData[event_count]['place']['name']
+            Graph.node[NodeName]['place name'] = PlaceName
+        if 'location' in EventData[event_count]['place']:
+            if 'street' in EventData[event_count]['place']['location']:
+                Adress = EventData[event_count]['place']['location']['street']
+                Graph.node[NodeName]['adress'] = Adress
+            if 'latitude' in EventData[event_count]['place']['location']:
+                Lat = EventData[event_count]['place']['location']['latitude']
+                Graph.node[NodeName]['lat'] = Lat
+            if 'longigude' in EventData[event_count]['place']['location']:
+                Lon = EventData[event_count]['place']['location']['longitude']
+                Graph.node[NodeName]['lon'] = Lon
+    # get time
+    if 'start_time' in EventData[event_count]:
+        Time = EventData[event_count]['start_time']
+        Graph.node[NodeName]['time'] = Time
+    # get attendance
+    if 'attending_count' in EventData[event_count]:
+        Attending = EventData[event_count]['attending_count']
+        Graph.node[NodeName]['attending'] = Attending
+    if 'interested_count' in EventData[event_count]:
+        Interested = EventData[event_count]['interested_count']
+        Graph.node[NodeName]['interested'] = Interested
+    if 'maybe_count' in EventData[event_count]:
+        Maybe = EventData[event_count]['maybe_count']
+        Graph.node[NodeName]['maybes'] = Maybe
+    event_count = event_count + 1
+    
+# write gexf
+networkx.write_gexf(Graph, '/path/to/graph_file.gexf')
+print('done')
+
