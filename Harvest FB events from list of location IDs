@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+
+import facebook
+import csv
+import json
+
+graph = facebook.GraphAPI(access_token='my_access_token', version='2.7')
+
+# open placelist (as produced here: https://github.com/tantlab/scripts/blob/master/geoharvest%20FB%20locations)
+
+with open('/path/to/my/placelist.json') as jsonfile:
+    placelist = json.load(jsonfile)
+
+
+# iterate over placelist to get list of event ID's
+
+eventIDlist = []
+place_count = 0
+
+for i in placelist:
+    token = placelist[place_count]['id'] + '/events'
+    events = graph.get_object(id=token)
+    print(token)
+    event_count = 0
+    for i in events['data']:
+        eventIDlist.append(events['data'][event_count]['id'])
+        event_count = event_count + 1
+        print('event indexed')
+    while 'paging' in events:
+        nexttoken = placelist[place_count]['id'] + '/events?pretty=0&limit=25&after=' + events['paging']['cursors']['after']
+        events = graph.get_object(id=nexttoken)
+        event_count = 0
+        for i in events['data']:
+            eventIDlist.append(events['data'][event_count]['id'])
+            event_count = event_count + 1
+            print('event indexed')
+    print('next list')
+    place_count = place_count + 1
+print('harvest complete')
+
+# remove duplicate event IDs
+
+eventIDlist_clean = []
+for i in eventIDlist:
+    if i not in eventIDlist_clean:
+        eventIDlist_clean.append(i)
+        
+print('done')
+
+# write local data file for eventlist
+
+import json
+
+with open('/path/to/my_datafile.json', 'w') as outfile:
+    json.dump(eventIDlist, outfile, ensure_ascii=False)
