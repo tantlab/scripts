@@ -1,0 +1,438 @@
+#!/usr/bin/env python
+
+import facebook
+import csv
+import json
+import time
+
+graph = facebook.GraphAPI(access_token='my_access_token', version='2.7')
+
+# load json list of event IDs (e.g. from here: https://github.com/tantlab/scripts/blob/master/Harvest%20FB%20events%20from%20list%20of%20location%20IDs)
+
+with open('/path/to/my_eventlist.json') as jsonfile:
+    eventIDlist = json.load(jsonfile)
+
+# get event data
+
+event_data = []
+event_count = 0
+
+for i in eventIDlist:
+    # get info
+    token = eventIDlist[event_count] + '?fields=description,type,name,place,start_time,owner,id,attending_count,interested_count,maybe_count'
+    event_info = graph.get_object(id=token)
+    print('now processing: ' + eventIDlist[event_count])
+    event_data.append(event_info)
+    # get attending
+    event_data[event_count]['attending'] = []
+    token = eventIDlist[event_count] + '/attending'
+    event_attending = graph.get_object(id=token)
+    id_count = 0
+    for i in event_attending['data']:
+        event_data[event_count]['attending'].append(event_attending['data'][id_count]['id'])
+        id_count = id_count + 1
+    print('25 attending users indexed')
+    if 'paging' in event_attending:
+        while_loop = 0
+        while 'next' in event_attending['paging']:
+            nexttoken = eventIDlist[event_count] + '/attending?pretty=0&limit=25&after=' + event_attending['paging']['cursors']['after']
+            event_attending = graph.get_object(id=nexttoken)
+            id_count = 0
+            for i in event_attending['data']:
+                event_data[event_count]['attending'].append(event_attending['data'][id_count]['id'])
+                id_count = id_count + 1
+            print('25 more attending users indexed')
+            while_loop = while_loop + 1
+            if while_loop is 25:
+                time.sleep(5)
+            if while_loop is 50:
+                time.sleep(5)
+            if while_loop is 75:
+                time.sleep(5)
+            if while_loop is 100:
+                time.sleep(5)
+            if while_loop is 125:
+                time.sleep(5)
+            if while_loop is 150:
+                time.sleep(5)
+            if while_loop is 175:
+                time.sleep(5)
+            if while_loop is 200:
+                time.sleep(5)
+            if while_loop is 225:
+                time.sleep(5)
+            if while_loop is 250:
+                time.sleep(5)
+    print('attending complete')
+    #get interested
+    event_data[event_count]['interested'] = []
+    token = eventIDlist[event_count] + '/interested'
+    event_interested = graph.get_object(id=token)
+    id_count = 0
+    for i in event_interested['data']:
+        event_data[event_count]['interested'].append(event_interested['data'][id_count]['id'])
+        id_count = id_count + 1
+    print('25 interested users indexed')
+    if 'paging' in event_interested:
+        while_loop = 0
+        while 'next' in event_interested['paging']:
+            nexttoken = eventIDlist[event_count] + '/interested?pretty=0&limit=25&after=' + event_interested['paging']['cursors']['after']
+            event_interested = graph.get_object(id=nexttoken)
+            id_count = 0
+            for i in event_interested['data']:
+                event_data[event_count]['interested'].append(event_interested['data'][id_count]['id'])
+                id_count = id_count + 1 
+            print('25 more interested users indexed')
+            while_loop = while_loop + 1
+            if while_loop is 25:
+                time.sleep(5)
+            if while_loop is 50:
+                time.sleep(5)
+            if while_loop is 75:
+                time.sleep(5)
+            if while_loop is 100:
+                time.sleep(5)
+            if while_loop is 125:
+                time.sleep(5)
+            if while_loop is 150:
+                time.sleep(5)
+            if while_loop is 175:
+                time.sleep(5)
+            if while_loop is 200:
+                time.sleep(5)
+            if while_loop is 225:
+                time.sleep(5)
+            if while_loop is 250:
+                time.sleep(5)
+    print('intersted complete')
+    #get maybes
+    event_data[event_count]['maybe'] = []
+    token = eventIDlist[event_count] + '/maybe'
+    event_maybe = graph.get_object(id=token)
+    id_count = 0
+    for i in event_maybe['data']:
+        event_data[event_count]['maybe'].append(event_maybe['data'][id_count]['id'])
+        id_count = id_count + 1
+    print('25 maybe users indexed')
+    if 'paging' in event_maybe:
+        while_loop = 0
+        while 'next' in event_maybe['paging']:
+            nexttoken = eventIDlist[event_count] + '/maybe?pretty=0&limit=25&after=' + event_maybe['paging']['cursors']['after']
+            event_maybe = graph.get_object(id=nexttoken)
+            id_count = 0
+            for i in event_maybe['data']:
+                event_data[event_count]['maybe'].append(event_maybe['data'][id_count]['id'])
+                id_count = id_count + 1 
+            print('25 more maybe users indexed')
+            while_loop = while_loop + 1
+            if while_loop is 25:
+                time.sleep(5)
+            if while_loop is 50:
+                time.sleep(5)
+            if while_loop is 75:
+                time.sleep(5)
+            if while_loop is 100:
+                time.sleep(5)
+            if while_loop is 125:
+                time.sleep(5)
+            if while_loop is 150:
+                time.sleep(5)
+            if while_loop is 175:
+                time.sleep(5)
+            if while_loop is 200:
+                time.sleep(5)
+            if while_loop is 225:
+                time.sleep(5)
+            if while_loop is 250:
+                time.sleep(5)
+    print('maybes complete')
+    event_count = event_count + 1  
+    print(event_count)
+
+# write data file
+
+import json
+
+with open('/path/to/local_datafile.json', 'w') as outfile:
+    json.dump(event_data, outfile, ensure_ascii=False)
+
+
+# NB: BELOW ONLY ONLY FOR RESTARTING MIDWAY IF SCRPT STOPS UNEXPECTEDLY
+#cget more event data from stopped script TWO EDITs NECESSARY, NAMELY THE EVENT HARVEST COUNT AND THE FOR-LOOP STARTING POINT (currently set to 100)
+event_data = []
+event_HarvestCount = 100 
+event_count = 0
+
+for i in eventIDlist[100:]: 
+    #get info
+    token = eventIDlist[event_HarvestCount] + '?fields=description,type,name,place,start_time,owner,id,attending_count,interested_count,maybe_count'
+    event_info = graph.get_object(id=token)
+    print('now processing: ' + eventIDlist[event_HarvestCount])
+    event_data.append(event_info)
+    #get attending
+    event_data[event_count]['attending'] = []
+    token = eventIDlist[event_HarvestCount] + '/attending'
+    event_attending = graph.get_object(id=token)
+    id_count = 0
+    for i in event_attending['data']:
+        event_data[event_count]['attending'].append(event_attending['data'][id_count]['id'])
+        id_count = id_count + 1
+    print('25 attending users indexed')
+    if 'paging' in event_attending:
+        while_loop = 0
+        while 'next' in event_attending['paging']:
+            nexttoken = eventIDlist[event_HarvestCount] + '/attending?pretty=0&limit=25&after=' + event_attending['paging']['cursors']['after']
+            event_attending = graph.get_object(id=nexttoken)
+            id_count = 0
+            for i in event_attending['data']:
+                event_data[event_count]['attending'].append(event_attending['data'][id_count]['id'])
+                id_count = id_count + 1
+            print('25 more attending users indexed')
+            while_loop = while_loop + 1
+            if while_loop is 25:
+                time.sleep(5)
+            if while_loop is 50:
+                time.sleep(5)
+            if while_loop is 75:
+                time.sleep(5)
+            if while_loop is 100:
+                time.sleep(5)
+            if while_loop is 125:
+                time.sleep(5)
+            if while_loop is 150:
+                time.sleep(5)
+            if while_loop is 175:
+                time.sleep(5)
+            if while_loop is 200:
+                time.sleep(5)
+            if while_loop is 225:
+                time.sleep(5)
+            if while_loop is 250:
+                time.sleep(5)
+            if while_loop is 275:
+                time.sleep(5)
+            if while_loop is 300:
+                time.sleep(5)
+            if while_loop is 325:
+                time.sleep(5)
+            if while_loop is 350:
+                time.sleep(5)
+            if while_loop is 375:
+                time.sleep(5)
+            if while_loop is 400:
+                time.sleep(5)
+            if while_loop is 425:
+                time.sleep(5)
+            if while_loop is 450:
+                time.sleep(5)
+            if while_loop is 475:
+                time.sleep(5)
+            if while_loop is 500:
+                time.sleep(5)
+            if while_loop is 525:
+                time.sleep(5)
+            if while_loop is 550:
+                time.sleep(5)
+            if while_loop is 575:
+                time.sleep(5)
+            if while_loop is 600:
+                time.sleep(5)
+            if while_loop is 625:
+                time.sleep(5)
+            if while_loop is 650:
+                time.sleep(5)
+            if while_loop is 675:
+                time.sleep(5)
+            if while_loop is 700:
+                time.sleep(5)
+            if while_loop is 725:
+                time.sleep(5)
+            if while_loop is 750:
+                time.sleep(5)
+            if while_loop is 775:
+                time.sleep(5)
+            if while_loop is 800:
+                time.sleep(5)
+            
+    print('attending complete')
+    #get interested
+    event_data[event_count]['interested'] = []
+    token = eventIDlist[event_HarvestCount] + '/interested'
+    event_interested = graph.get_object(id=token)
+    id_count = 0
+    for i in event_interested['data']:
+        event_data[event_count]['interested'].append(event_interested['data'][id_count]['id'])
+        id_count = id_count + 1
+    print('25 interested users indexed')
+    if 'paging' in event_interested:
+        while_loop = 0
+        while 'next' in event_interested['paging']:
+            nexttoken = eventIDlist[event_HarvestCount] + '/interested?pretty=0&limit=25&after=' + event_interested['paging']['cursors']['after']
+            event_interested = graph.get_object(id=nexttoken)
+            id_count = 0
+            for i in event_interested['data']:
+                event_data[event_count]['interested'].append(event_interested['data'][id_count]['id'])
+                id_count = id_count + 1 
+            print('25 more interested users indexed')
+            while_loop = while_loop + 1
+            if while_loop is 25:
+                time.sleep(5)
+            if while_loop is 50:
+                time.sleep(5)
+            if while_loop is 75:
+                time.sleep(5)
+            if while_loop is 100:
+                time.sleep(5)
+            if while_loop is 125:
+                time.sleep(5)
+            if while_loop is 150:
+                time.sleep(5)
+            if while_loop is 175:
+                time.sleep(5)
+            if while_loop is 200:
+                time.sleep(5)
+            if while_loop is 225:
+                time.sleep(5)
+            if while_loop is 250:
+                time.sleep(5)
+            if while_loop is 275:
+                time.sleep(5)
+            if while_loop is 300:
+                time.sleep(5)
+            if while_loop is 325:
+                time.sleep(5)
+            if while_loop is 350:
+                time.sleep(5)
+            if while_loop is 375:
+                time.sleep(5)
+            if while_loop is 400:
+                time.sleep(5)
+            if while_loop is 425:
+                time.sleep(5)
+            if while_loop is 450:
+                time.sleep(5)
+            if while_loop is 475:
+                time.sleep(5)
+            if while_loop is 500:
+                time.sleep(5)
+            if while_loop is 525:
+                time.sleep(5)
+            if while_loop is 550:
+                time.sleep(5)
+            if while_loop is 575:
+                time.sleep(5)
+            if while_loop is 600:
+                time.sleep(5)
+            if while_loop is 625:
+                time.sleep(5)
+            if while_loop is 650:
+                time.sleep(5)
+            if while_loop is 675:
+                time.sleep(5)
+            if while_loop is 700:
+                time.sleep(5)
+            if while_loop is 725:
+                time.sleep(5)
+            if while_loop is 750:
+                time.sleep(5)
+            if while_loop is 775:
+                time.sleep(5)
+            if while_loop is 800:
+                time.sleep(5)
+    print('intersted complete')
+    #get maybes
+    event_data[event_count]['maybe'] = []
+    token = eventIDlist[event_HarvestCount] + '/maybe'
+    event_maybe = graph.get_object(id=token)
+    id_count = 0
+    for i in event_maybe['data']:
+        event_data[event_count]['maybe'].append(event_maybe['data'][id_count]['id'])
+        id_count = id_count + 1
+    print('25 maybe users indexed')
+    if 'paging' in event_maybe:
+        while_loop = 0
+        while 'next' in event_maybe['paging']:
+            nexttoken = eventIDlist[event_HarvestCount] + '/maybe?pretty=0&limit=25&after=' + event_maybe['paging']['cursors']['after']
+            event_maybe = graph.get_object(id=nexttoken)
+            id_count = 0
+            for i in event_maybe['data']:
+                event_data[event_count]['maybe'].append(event_maybe['data'][id_count]['id'])
+                id_count = id_count + 1 
+            print('25 more maybe users indexed')
+            while_loop = while_loop + 1
+            if while_loop is 25:
+                time.sleep(5)
+            if while_loop is 50:
+                time.sleep(5)
+            if while_loop is 75:
+                time.sleep(5)
+            if while_loop is 100:
+                time.sleep(5)
+            if while_loop is 125:
+                time.sleep(5)
+            if while_loop is 150:
+                time.sleep(5)
+            if while_loop is 175:
+                time.sleep(5)
+            if while_loop is 200:
+                time.sleep(5)
+            if while_loop is 225:
+                time.sleep(5)
+            if while_loop is 250:
+                time.sleep(5)
+            if while_loop is 275:
+                time.sleep(5)
+            if while_loop is 300:
+                time.sleep(5)
+            if while_loop is 325:
+                time.sleep(5)
+            if while_loop is 350:
+                time.sleep(5)
+            if while_loop is 375:
+                time.sleep(5)
+            if while_loop is 400:
+                time.sleep(5)
+            if while_loop is 425:
+                time.sleep(5)
+            if while_loop is 450:
+                time.sleep(5)
+            if while_loop is 475:
+                time.sleep(5)
+            if while_loop is 500:
+                time.sleep(5)
+            if while_loop is 525:
+                time.sleep(5)
+            if while_loop is 550:
+                time.sleep(5)
+            if while_loop is 575:
+                time.sleep(5)
+            if while_loop is 600:
+                time.sleep(5)
+            if while_loop is 625:
+                time.sleep(5)
+            if while_loop is 650:
+                time.sleep(5)
+            if while_loop is 675:
+                time.sleep(5)
+            if while_loop is 700:
+                time.sleep(5)
+            if while_loop is 725:
+                time.sleep(5)
+            if while_loop is 750:
+                time.sleep(5)
+            if while_loop is 775:
+                time.sleep(5)
+            if while_loop is 800:
+                time.sleep(5)
+    print('maybes complete')
+    event_count = event_count + 1
+    event_HarvestCount = event_HarvestCount + 1
+    print(event_count)
+    
+
+# write supplementary data file
+
+import json
+
+with open('/path/to/local_datafile2.json', 'w') as outfile:
+    json.dump(event_data, outfile, ensure_ascii=False)
