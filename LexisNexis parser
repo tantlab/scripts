@@ -1,0 +1,52 @@
+import re
+import csv
+
+NexisResults = '/path/to/nexis/results.txt' #specify the location of your Nexis results
+DestinationFolder = '/path/to/data/folder/' #specify the location of the output folder
+DataTable = [['Filename','Title','Source','Year']]
+
+#import file
+in_file = open(NexisResults, 'rt') 
+content = in_file.read()         
+in_file.close() 
+
+#perform regex splits
+content = content.replace('\n\n\n\n', '\n\n\n')
+content = re.split('\d+\sof\s\d+\sDOCUMENTS', content)
+del(content[0])
+for i in content:
+    
+    #find the source
+    source = i.split('\n\n')
+    source = source[1].strip()
+    
+    #find the year
+    year = i.split('\n\n')
+    year = year[2].replace('/n','')
+    year = year.strip()
+    year = re.findall('\d\d\d\d', year)
+    year = year[0]
+    
+    #find the title
+    title = i.split('\n\n')
+    title = title[3].replace('\n',' ')
+    
+    #find the text
+    text = re.split('LENGTH:\s\d+\s+words', i)
+    text = text[1].split('LOAD-DATE: ')
+    text = text[0].replace('\n',' ')
+    
+    #data dump
+    filename = year + '_' + source + '_' + title
+    data = [filename,title,source,year]
+    DataTable.append(data)
+    path = DestinationFolder + filename
+    file = open(path,'w') 
+    file.write(text) 
+    file.close() 
+
+#write metadata file
+path = DestinationFolder + 'MetaData.csv'
+with open(path, 'w') as f:
+    writer = csv.writer(f)
+    writer.writerows(DataTable)
