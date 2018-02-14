@@ -1,0 +1,104 @@
+import facebook
+graph = facebook.GraphAPI(access_token='yourAppID|YourAppSecret', version='2.7')
+
+import csv
+snowball = []
+edges = []
+Indicators = []
+
+with open('/Path/To/FileWith/IndicatorWords.csv') as csvfile:
+    indicator_list = csv.reader(csvfile)
+    for row in indicator_list:
+        Indicators.append(row[0])
+    
+
+with open('/Path/To/FileWith/Seed_PageIDs.csv') as csvfile:
+    seedlist = csv.reader(csvfile)
+    
+    for row in seedlist:
+        print(row)
+        token = row[0] + '?fields=likes.limit(100){location,about,name},name,id'
+        try:
+            likes = graph.get_object(id=token)
+            paging = likes['likes']['paging']
+            if 'likes' in likes:
+                if 'data' in likes['likes']:
+                    for like in likes['likes']['data']:
+                        if 'about' in like:
+                            relevance = 0
+                            for indicator in Indicators:
+                                if like['about'].lower().find(indicator) > 0:
+                                    relevance = relevance + 1
+
+                            if relevance > 0 and like['id'] not in snowball:
+                                snowball.append(like['id'])
+                                edge = {int(row[0]),like['id']} 
+                                edges.append(edge)
+                                print('found')
+
+                    while 'next' in paging:
+                        print('paging')
+                        nexttoken = row[0] + '/likes?access_token=1446618168730188%7CsK4hOvFJ1Hby65ZYO8b-aR2jcP4&fields=location%2Cabout%2Cname&limit=100&after=' + likes['likes']['paging']['cursors']['after']
+                        likes = graph.get_object(id=nexttoken)
+                        paging = likes['paging']
+                        for like in likes['data']:
+                            if 'about' in like:
+                                relevance = 0
+                                for indicator in Indicators:
+                                    if like['about'].lower().find(indicator) > 0:
+                                        relevance = relevance + 1
+
+                                if relevance > 0 and like['id'] not in snowball:
+                                    snowball.append(like['id'])
+                                    edge = {int(row[0]),like['id']} 
+                                    edges.append(edge)
+                                    print('found')
+                    print('seed done')
+
+        except:
+            print('skipping')
+    
+    print('NOW SNOWBALLING')
+    
+    for page in snowball:
+        print(page)
+        token = page + '?fields=likes.limit(100){location,about,name},name,id'
+        try:
+            likes = graph.get_object(id=token)
+            paging = likes['likes']['paging']
+            if 'likes' in likes:
+                if 'data' in likes['likes']:
+                    for like in likes['likes']['data']:
+                        if 'about' in like:
+                            relevance = 0
+                            for indicator in Indicators:
+                                if like['about'].lower().find(indicator) > 0:
+                                    relevance = relevance + 1
+                            
+                            if relevance > 0 and like['id'] not in snowball:
+                                snowball.append(like['id'])
+                                print('found')
+                                edge = {page,like['id']} 
+                                edges.append(edge)
+                            
+                    while 'next' in paging:
+                        print('paging')
+                        nexttoken = row[0] + '/likes?access_token=1446618168730188%7CsK4hOvFJ1Hby65ZYO8b-aR2jcP4&fields=location%2Cabout%2Cname&limit=100&after=' + likes['likes']['paging']['cursors']['after']
+                        likes = graph.get_object(id=nexttoken)
+                        paging = likes['paging']
+                        for like in likes['data']:
+                            if 'about' in like:
+                                relevance = 0
+                                for indicator in Indicators:
+                                    if like['about'].lower().find(indicator) > 0:
+                                        relevance = relevance + 1
+
+                                if relevance > 0 and like['id'] not in snowball:
+                                    snowball.append(like['id'])
+                                    print('found')
+                                    edge = {page,like['id']} 
+                                    edges.append(edge)
+                    print('seed done')
+        except:
+            print('skipping')
+print('harvest complete')
