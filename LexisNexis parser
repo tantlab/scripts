@@ -6,7 +6,7 @@ DestinationFolder = '/Users/anders/Desktop/NexisData/' #specify the output folde
 DataTable = [['Filename','Title','Source','Year']]
 
 #import file
-in_file = open(NexisResults, 'rt') 
+in_file = open(NexisResults, 'rt', encoding='utf8') 
 content = in_file.read()         
 in_file.close() 
 
