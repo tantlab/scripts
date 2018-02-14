@@ -1,8 +1,8 @@
 import re
 import csv
 
-NexisResults = '/path/to/nexis/results.txt' #specify the location of your Nexis results
-DestinationFolder = '/path/to/data/folder/' #specify the location of the output folder
+NexisResults = '/Users/anders/Downloads/NexisTest.txt' #spcify the location of your Nexis results
+DestinationFolder = '/Users/anders/Desktop/NexisData/'
 DataTable = [['Filename','Title','Source','Year']]
 
 #import file
@@ -38,6 +38,8 @@ for i in content:
     
     #data dump
     filename = year + '_' + source + '_' + title
+    if len(filename) > 100:
+        filename = filename[0:100]
     data = [filename,title,source,year]
     DataTable.append(data)
     path = DestinationFolder + filename
