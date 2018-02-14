@@ -102,3 +102,12 @@ with open('/Path/To/FileWith/Seed_PageIDs.csv') as csvfile:
         except:
             print('skipping')
 print('harvest complete')
+
+#build network
+import networkx
+Graph = networkx.Graph()
+
+Graph.add_edges_from(edges)
+
+networkx.write_gexf(Graph, '/Path/to/Downloaded/network.gexf')
+print('done')
