@@ -1,8 +1,8 @@
 import re
 import csv
 
-NexisResults = '/Users/anders/Downloads/NexisTest.txt' #spcify the location of your Nexis results
-DestinationFolder = '/Users/anders/Desktop/NexisData/'
+NexisResults = '/Users/anders/Downloads/NexisTest.txt' #specify the location of your Nexis results
+DestinationFolder = '/Users/anders/Desktop/NexisData/' #specify the output folder
 DataTable = [['Filename','Title','Source','Year']]
 
 #import file
