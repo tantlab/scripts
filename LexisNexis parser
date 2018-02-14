@@ -62,3 +62,4 @@ path = DestinationFolder + 'MetaData.csv'
 with open(path, 'w') as f:
     writer = csv.writer(f)
     writer.writerows(DataTable)
+print('it worked')
