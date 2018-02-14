@@ -2,7 +2,7 @@ import re
 import csv
 
 NexisResults = '/Users/anders/Downloads/NexisTest.txt' #specify the location of your Nexis results
-DestinationFolder = '/Users/anders/Desktop/NexisData/' #specify the output folder
+DestinationFolder = '/Users/anders/Desktop/NexisData/' #specify the location of your output folder
 DataTable = [['Filename','Title','Source','Year']]
 
 #import file
@@ -40,6 +40,15 @@ for i in content:
     filename = year + '_' + source + '_' + title
     if len(filename) > 100:
         filename = filename[0:100]
+    filename = filename.replace('<', '')
+    filename = filename.replace('>', '')
+    filename = filename.replace(':', '')
+    filename = filename.replace('?', '')
+    filename = filename.replace('"', '')
+    filename = filename.replace('/', '')
+    filename = filename.replace('\\', '')
+    filename = filename.replace('|', '')
+    filename = filename.replace('*', '')
     data = [filename,title,source,year]
     DataTable.append(data)
     path = DestinationFolder + filename
