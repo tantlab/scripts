@@ -3,7 +3,7 @@ import csv
 
 NexisResults = '/Users/anders/Downloads/NexisTest.txt' #specify the location of your Nexis results
 DestinationFolder = '/Users/anders/Desktop/NexisData/' #specify the location of your output folder
-DataTable = [['Filename','Title','Source','Year']]
+DataTable = [['filename','title','source','year']]
 
 #import file
 in_file = open(NexisResults, 'rt', encoding='utf8') 
