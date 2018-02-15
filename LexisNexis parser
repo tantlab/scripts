@@ -26,6 +26,7 @@ for i in content:
     year = year[2].replace('/n','')
     year = year.strip()
     year = re.findall('\d\d\d\d', year)
+    year = year.replace('\n','')
     year = year[0]
     
     #find the title
@@ -50,9 +51,10 @@ for i in content:
     filename = filename.replace('\\', '')
     filename = filename.replace('|', '')
     filename = filename.replace('*', '')
+    filename = filename.replace('\n', '')
     data = [filename,title,source,year]
     DataTable.append(data)
-    path = DestinationFolder + filename
+    path = DestinationFolder + filename + '.txt'
     file = open(path,'w') 
     file.write(text) 
     file.close() 
