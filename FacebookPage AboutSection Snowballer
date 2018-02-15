@@ -71,10 +71,10 @@ with open('/Users/anders/Downloads/SeedList_AirPollution_FacebookPages - TestSet
                             for indicator in Indicators:
                                 if like['about'].lower().find(indicator) > 0:
                                     relevance = relevance + 1
-
+                                    print(indicator)
                             if relevance > 0 and like['id'] not in snowball:
                                 snowball.append(like['id'])
-                                edge = {int(row[0]),like['id']} 
+                                edge = {likes['id'],like['id']} 
                                 edges.append(edge)
                                 print('found')
                                 if like['id'] not in seen_nodes:
@@ -129,10 +129,10 @@ with open('/Users/anders/Downloads/SeedList_AirPollution_FacebookPages - TestSet
                                 for indicator in Indicators:
                                     if like['about'].lower().find(indicator) > 0:
                                         relevance = relevance + 1
-
+                                        print(indicator)
                                 if relevance > 0 and like['id'] not in snowball:
                                     snowball.append(like['id'])
-                                    edge = {int(row[0]),like['id']} 
+                                    edge = {likes['id'],like['id']} 
                                     edges.append(edge)
                                     print('found')
                                     if like['id'] not in seen_nodes:
@@ -236,12 +236,13 @@ with open('/Users/anders/Downloads/SeedList_AirPollution_FacebookPages - TestSet
                             relevance = 0
                             for indicator in Indicators:
                                 if like['about'].lower().find(indicator) > 0:
+                                    print(indicator)
                                     relevance = relevance + 1
                             
                             if relevance > 0 and like['id'] not in snowball:
                                 snowball.append(like['id'])
                                 print('found')
-                                edge = {page,like['id']} 
+                                edge = {likes['id'],like['id']} 
                                 edges.append(edge)
                                 if like['id'] not in seen_nodes:
                                     ID = like['id']
@@ -295,11 +296,11 @@ with open('/Users/anders/Downloads/SeedList_AirPollution_FacebookPages - TestSet
                                 for indicator in Indicators:
                                     if like['about'].lower().find(indicator) > 0:
                                         relevance = relevance + 1
-
+                                        print(indicator)
                                 if relevance > 0 and like['id'] not in snowball:
                                     snowball.append(like['id'])
                                     print('found')
-                                    edge = {page,like['id']} 
+                                    edge = {likes['id'],like['id']} 
                                     edges.append(edge)
                                     if like['id'] not in seen_nodes:
                                         ID = like['id']
@@ -354,7 +355,7 @@ Graph.add_edges_from(edges)
 
 for i in attributes:
     if i['id'] in Graph:
-        Graph.node[i['id']]['about'] = i['about']
+        #Graph.node[i['id']]['about'] = i['about']
         Graph.node[i['id']]['category'] = i['category']
         Graph.node[i['id']]['city'] = i['city']
         Graph.node[i['id']]['country'] = i['country']
@@ -364,5 +365,6 @@ for i in attributes:
         Graph.node[i['id']]['link'] = i['link']
         Graph.node[i['id']]['name'] = i['name']
 
-networkx.write_gexf(Graph, '/Users/anders/Downloads/PageSnowball_AirPollution.gexf', encoding='utf8')
+networkx.write_gexf(Graph, '/Users/anders/Downloads/PalmOil.gexf', encoding='utf8')
 print('done')
+    
