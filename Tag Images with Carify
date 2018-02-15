@@ -1,0 +1,81 @@
+from clarifai.rest import ClarifaiApp
+      
+app = ClarifaiApp(api_key=MyAPIKey) #insert your key
+      
+# get the general model
+model = app.models.get("general-v1.3")
+
+import csv
+
+with open('/My/Local/Path/For/ImageUrlList.csv') as csvDataFile: #insert your path
+    csvReader = csv.reader(csvDataFile)
+    urllist = []
+    for row in csvReader:
+        urllist.append(row[2])
+count = 1
+tagdatalist = []
+
+for i in urllist[1:]:
+    # predict with the model
+    tagdata = model.predict_by_url(url=urllist[count])
+    tagdatalist.append(tagdata)
+    count = count + 1
+    print(count)
+print('done tagging')
+
+# write data file
+
+import json
+
+with open('/my/local/path_to_datafile.json', 'w') as outfile: #insert your path
+    json.dump(tagdatalist, outfile, ensure_ascii=False)
+    
+# build list of toptags by image 
+list_of_toptags = []
+count = 0
+
+for i in tagdatalist:
+    count_names = 0
+    TagsAbove97 = []
+    for i in tagdatalist[count]['outputs'][0]['data']['concepts']:
+        if tagdatalist[count]['outputs'][0]['data']['concepts'][count_names]['value'] > 0.97:
+            TagsAbove97.append(tagdatalist[count]['outputs'][0]['data']['concepts'][count_names]['name'])
+        count_names = count_names + 1
+    toptags = {'url': tagdatalist[count]['outputs'][0]['input']['data']['image']['url'], 'TagsAbove97': TagsAbove97}
+    list_of_toptags.append(toptags)
+    count = count + 1
+print('done building toptag list')
+
+# write list of top tags as file
+
+import json
+
+with open('/my/local/path_to_TopTagsList.json', 'w') as outfile:  #insert your path
+    json.dump(list_of_toptags, outfile, ensure_ascii=False)
+    
+# build network of tags and images
+
+SourceCount = 0
+ImageTagNetwork = []
+
+for i in list_of_toptags:
+    Source = list_of_toptags[SourceCount]['url']
+    TargetCount = 0
+    for i in list_of_toptags[SourceCount]['TagsAbove97']:
+        Target = list_of_toptags[SourceCount]['TagsAbove97'][TargetCount]
+        Edge = (Source, Target)
+        ImageTagNetwork.append(Edge)
+        TargetCount = TargetCount + 1
+    SourceCount = SourceCount + 1
+
+print('network done')       
+
+# write network of tags and images
+
+import networkx
+Graph = networkx.Graph()
+
+Graph.add_edges_from(ImageTagNetwork)
+
+networkx.write_gexf(Graph, '/local/path/to/my/network.gexf') #insert your path
+print('all done')
