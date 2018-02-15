@@ -364,5 +364,5 @@ for i in attributes:
         Graph.node[i['id']]['link'] = i['link']
         Graph.node[i['id']]['name'] = i['name']
 
-networkx.write_gexf(Graph, '/Users/anders/Downloads/PageSnowball_AirPollution.gexf')
+networkx.write_gexf(Graph, '/Users/anders/Downloads/PageSnowball_AirPollution.gexf', encoding='utf8')
 print('done')
