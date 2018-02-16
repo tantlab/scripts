@@ -14,6 +14,7 @@ in_file.close()
 content = content.replace('\n\n\n\n', '\n\n\n')
 content = re.split('\d+\sof\s\d+\sDOCUMENTS', content)
 del(content[0])
+filename = 0
 for i in content:
     
     #find the source
@@ -23,10 +24,10 @@ for i in content:
     
     #find the year
     year = i.split('\n\n')
-    year = year[2].replace('/n','')
+    year = year[2]
+    year = year.replace('\n','')
     year = year.strip()
     year = re.findall('\d\d\d\d', year)
-    year = year.replace('\n','')
     year = year[0]
     
     #find the title
@@ -39,25 +40,13 @@ for i in content:
     text = text[0].replace('\n',' ')
     
     #data dump
-    filename = year + '_' + source + '_' + title
-    if len(filename) > 70:
-        filename = filename[0:70]
-    filename = filename.replace('<', '')
-    filename = filename.replace('>', '')
-    filename = filename.replace(':', '')
-    filename = filename.replace('?', '')
-    filename = filename.replace('"', '')
-    filename = filename.replace('/', '')
-    filename = filename.replace('\\', '')
-    filename = filename.replace('|', '')
-    filename = filename.replace('*', '')
-    filename = filename.replace('\n', '')
-    data = [filename,title,source,year]
+    data = [str(filename),title,source,year]
     DataTable.append(data)
-    path = DestinationFolder + filename + '.txt'
+    path = DestinationFolder + str(filename) + '.txt'
     file = open(path,'w') 
     file.write(text) 
     file.close() 
+    filename = filename + 1
 
 #write metadata file
 path = DestinationFolder + 'MetaData.csv'
