@@ -1,0 +1,30 @@
+#!/bin/bash
+echo "### THIS SCRIPT IS ONLY FOR USE IN UBUNTU 17.04 ###"
+echo "This install script does the following: update package index, install dependencies packages, add Docker GPG key, add Docker CE to repository, install Docker CE, update Docker CE to newest, install Compose for Docker, clone Hyphe from git, prepare Docker containers"
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+sudo add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable"
+sudo apt-get update
+sudo apt-get install docker-ce
+echo "Verifying Docker CE install"
+sudo docker run hello-world
+echo "Install Compose"
+# sudo curl -L https://github.com/docker/compose/release/download/1.20.1/docker-compose-'uname -s'-'uname -m' -o /usr/local/bin/docker-compose
+sudo curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+git clone https://github.com/medialab/hyphe.git hyphe
+cd hyphe
+cp .env.example .env
+cp config-backend.env.example config-backend.env
+cp config-frontend.env.example config-frontend.env
+sudo docker-compose pull
+sudo docker-compose up
