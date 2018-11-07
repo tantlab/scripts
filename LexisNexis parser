@@ -35,7 +35,7 @@ for i in content:
     title = title[3].replace('\n',' ')
     
     #find the text
-    text = re.split('LENGTH:\s\d+\s+words', i)
+    text = re.split('LENGTH:\s\d+\s+[a-zA-Z]ords', i)
     text = text[1].split('LOAD-DATE: ')
     text = text[0].replace('\n',' ')
     
